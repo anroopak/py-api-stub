@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import sys
+import xmltodict
 
 from collections import defaultdict
 from flask import Flask
@@ -49,7 +50,11 @@ def catch_all(path, *args, **kwargs):
 
 def render_json(path, **kwargs):
     with open(path, "r") as f:
-        return jsonify(json.load(f)), 200
+        if path.lower().endswith('.xml'):
+            d = xmltodict.parse(f.read())
+        else:
+            d = json.load(f)
+        return jsonify(d), 200
 
 
 def discover_routes(path, base_dir=None):
